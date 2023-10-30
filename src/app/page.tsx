@@ -2,9 +2,20 @@
 import './style/custom-styles.css';
 import React from 'react';
 import { Button } from 'antd';
-import TreeDemo from '../components/treeDemo';
+import TreeDemo from '../components/TreeDemo';
 
-const data = [
+
+interface TreeNode {
+  id: number;
+  name: string;
+  ownerId?: number;
+  children?: TreeNode[];
+  level: number;
+  title?: string
+}
+
+
+const input: TreeNode[] = [
   { id: 1, name: "layer 1", level: 1 },
   { id: 2, name: "layer 1 - 1", level: 2, ownerId: 1 },
   { id: 3, name: "layer 1 - 2", level: 2, ownerId: 1 },
@@ -15,50 +26,35 @@ const data = [
   { id: 8, name: "layer 1 - 2 - 3", level: 3, ownerId: 3 },
 ];
 
-interface Layer {
-  id: number;
-  name: string;
-  level: number;
-  ownerId?: number;
+function buildTree(input: TreeNode[], parentId: number = 1) {
+  const node = input.find((item) => {
+    if (item.id === parentId) {
+      item.title = item.name;
+      return true
+    }
+  });
+
+  if (!node) return null;
+
+  const children = input.filter((item) => item.ownerId === parentId);
+
+  if (children.length > 0) {
+    node.children = children.map((child) => buildTree(input, child.id)) as TreeNode[];
+  }
+
+  return node;
 }
 
-function transformData(data: Layer[]) {
-  //tìm đc level 1 đầu tiên
-  const level1 = data.find((item) => {
-    return item.level === 1
-  })
-  console.log("👙 🏊‍♀️  🏄‍♀️ 🌴 🌊  ~ level1:", level1)
+// const result = buildTree(input);
 
-
-  const level2 = data.filter((item) => {
-    return item.level === 2
-  })
-  level1.childs = level2;
-
-  const level3 = data.filter((item) => {
-    return item.level === 3
-  })
-  level2.childs = level3;
-  const level4 = data.filter((item) => {
-    return item.level === 4
-  })
-  level3.childs = level4;
-
-  const level5 = data.filter((item) => {
-    return item.level === 5
-  })
-  level4.childs = level5;
-
-
-  return level1;
-}
 
 const YourComponent = () => {
-  const objData = transformData(data);
+  const result = buildTree(input);
+  // console.log(result);
 
   return (
     <div>
-      <TreeDemo objData={objData} />
+      <TreeDemo objData={result} />
     </div>
   );
 };
