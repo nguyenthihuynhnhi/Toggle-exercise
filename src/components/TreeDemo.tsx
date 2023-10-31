@@ -1,7 +1,7 @@
 import React from 'react'
 import { Tree } from 'antd';
 import type { DataNode, TreeProps } from 'antd/es/tree';
-
+import "../../src/app/style/custom-styles.css"
 
 type TreeNode = {
     id: number;
